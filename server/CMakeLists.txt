@@ -1,27 +1,16 @@
-include(FetchContent)
-find_package(Threads REQUIRED)
-
-# --- Standalone Asio (header-only, downloaded) ---
+set(BOOST_INCLUDE_LIBRARIES asio)
+set(BOOST_ENABLE_CMAKE ON)
 FetchContent_Declare(
-    asio
-    GIT_REPOSITORY  https://github.com/chriskohlhoff/asio.git
-    GIT_TAG         asio-1-38-2
-    GIT_SHALLOW     TRUE
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND     ""
+    Boost
+    URL https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.gz
 )
-FetchContent_MakeAvailable(asio)
-
-add_library(asio_iface INTERFACE)
-target_include_directories(asio_iface INTERFACE ${asio_SOURCE_DIR}/asio/include)
-target_compile_definitions(asio_iface INTERFACE ASIO_STANDALONE ASIO_NO_DEPRECATED)
-target_link_libraries(asio_iface INTERFACE Threads::Threads)
+FetchContent_MakeAvailable(Boost) 
 
 # --- Server target ---
 file(GLOB_RECURSE SERVER_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
 add_executable(agario_server ${SERVER_SOURCES})
-target_link_libraries(agario_server PRIVATE asio_iface)
+target_link_libraries(agario_server PRIVATE Boost::asio)  
 set_target_properties(agario_server PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/server/bin
 )   
